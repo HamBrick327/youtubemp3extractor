@@ -4,8 +4,8 @@ from pytube import Playlist, YouTube
 from youtubesearchpython import VideosSearch
 from spotipy.oauth2 import SpotifyClientCredentials
 
-spotify = spotipy.Spotify(auth_manager=SpotifyClientCredentials(client_id="e1ca0e54413443109ff7eb696827389c",
-                                                           client_secret="ccec093c662440b6aa8cdb848cb452da"))
+spotify = spotipy.Spotify(auth_manager=SpotifyClientCredentials(client_id={INSERT_CLIENT_ID},
+                                                           client_secret={INSERT_CLIENT_SECRET}))
 playlistLink = "https://open.spotify.com/playlist/7s0hReCIRegs9Q2QrsVgC9?si=30169aad79f04d6a"
 
 playlist_tracks = spotify.user_playlist_tracks(user="dnvilrb9mvskmyacyk8mj4900", playlist_id="7s0hReCIRegs9Q2QrsVgC9", fields='items,uri,name,id,total', market='us', limit=100)
