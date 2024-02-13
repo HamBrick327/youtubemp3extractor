@@ -3,28 +3,13 @@ import os
 from pytube import Playlist, YouTube
 from youtubesearchpython import VideosSearch
 from spotipy.oauth2 import SpotifyClientCredentials
+from moviepy.editor import VideoFileClip
 
-spotify = spotipy.Spotify(auth_manager=SpotifyClientCredentials(client_id={INSERT_CLIENT_ID},
-                                                           client_secret={INSERT_CLIENT_SECRET}))
-playlistLink = "https://open.spotify.com/playlist/7s0hReCIRegs9Q2QrsVgC9?si=30169aad79f04d6a"
-
-playlist_tracks = spotify.user_playlist_tracks(user="dnvilrb9mvskmyacyk8mj4900", playlist_id="7s0hReCIRegs9Q2QrsVgC9", fields='items,uri,name,id,total', market='us', limit=100)
-# alt_playlist = spotify.playlist_tracks(playlist_id="6nlUFeFAPjaDTA7A0VVwnO")
+spotify = spotipy.Spotify(auth_manager=SpotifyClientCredentials(client_id={"e1ca0e54413443109ff7eb696827389c"},
+                                                           client_secret={"f12b6a6d37ed499fa9660a9716756971"}))
+playlistLink = "https://open.spotify.com/playlist/7s0hReCIRegs9Q2QrsVgC9?si=57117ff2524942b8"
 
 
-'''
-print()
-
-## print name of track
-trackname = playlist_tracks["items"][20]["track"]["name"]
-print(trackname)
-
-## print artist of track
-artistname = playlist_tracks["items"][20]["track"]["artists"][0]["name"]
-print(artistname)
-
-print(len(playlist_tracks["items"]))
-'''
 
 def searchYoutube(query: str, output_path: str="./output"):
     ## search for song on youtube
@@ -41,15 +26,21 @@ def searchYoutube(query: str, output_path: str="./output"):
     ## doing it the pytube way
     video = YouTube(url)
     audio = video.streams.filter(only_audio=True).first() ## download only the video's audio, but still as a mp4 file
-    output = audio.download(output_path=output_path) ## set the output destination
+    output = audio.download(output_path=output_path) ## change to audio.download() when above line is being used
     
     ## change the file extension, ooga booga style
     name, ext = os.path.splitext(output)
     ext = '.mp3'
     try:
-        os.rename(output, (name + ext))
+        video_file = VideoFileClip(f"{name}.mp4")
+        audio_file = video_file.audio
+        audio_file.write_audiofile(f"{name}.mp3")
+        video_file.close()
+        audio_file.close()
+        os.remove(f"{name}.mp4")
     except:
         print("file already exists, skipping")
+        os.remove(f"./{name}.mp4")
     
 def spotPlaylist(link):
     ## track URL https://open.spotify.com/playlist/6yHOBv1K6lvJHbAcr61SBB?si=30169aad79f04d6a
@@ -60,7 +51,6 @@ def spotPlaylist(link):
         track = i["track"]["name"]
         artist = i["track"]["artists"][0]["name"]
         print(track, ':', artist)
-
 
 def greaterThan100(link):
     ## initialize an empty list to return later as all of the tracks from the playlist
