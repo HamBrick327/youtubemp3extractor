@@ -9,8 +9,10 @@ import eyed3
 spotify = spotipy.Spotify(auth_manager=SpotifyClientCredentials(client_id="e1ca0e54413443109ff7eb696827389c",
                                                            client_secret="f12b6a6d37ed499fa9660a9716756971"))
 
-playlistLink = "https://open.spotify.com/playlist/7s0hReCIRegs9Q2QrsVgC9?si=2e91b220db3643d0"
-
+## test playlsit --> "https://open.spotify.com/playlist/7s0hReCIRegs9Q2QrsVgC9?si=2e91b220db3643d0"
+playlistLink = input("spotify playlist: ")
+if playlistLink == '': playlistLink = "https://open.spotify.com/playlist/7s0hReCIRegs9Q2QrsVgC9?si=2e91b220db3643d0"
+playlistId = playlistLink.split("/")[-1].split("?")[0]
 
 
 def searchYoutube(query: str, output_path: str="./output"):
@@ -53,20 +55,16 @@ def searchYoutube(query: str, output_path: str="./output"):
 def spotPlaylist(link):
     ## track URL https://open.spotify.com/playlist/6yHOBv1K6lvJHbAcr61SBB?si=30169aad79f04d6a
 
-    playlist = spotify.playlist_tracks(playlist_id="6yHOBv1K6lvJHbAcr61SBB")
+    playlist = spotify.playlist_tracks(playlist_id=playlistId)
     # print each track in playlist
     for i in playlist["items"]:
         track = i["track"]["name"]
         artist = i["track"]["artists"][0]["name"]
         print(track, ':', artist)
 
-def greaterThan100(link):
+def greaterThan100():
     ## initialize an empty list to return later as all of the tracks from the playlist
     all_tracks = []
-
-    ## get the playlist ID from the playlist link
-    id = link.split("/")[-1].split("?")[0] ## list[-1] prints the last item of the list
-    ## I learned now that you can just use the playlist link directly as the playlist_id so this is technically not needed.
 
     tracks = []
     
@@ -77,7 +75,7 @@ def greaterThan100(link):
     offset = 0
     while True:
         ## only using this to get playlist name
-        playlist = spotify.playlist(playlist_id=id)
+        playlist = spotify.playlist(playlist_id=playlistId)
         '''
         so what this does basically is force the spotify api to grab more than 100 tracks from the playlist by setting 
         the offset to whatever the length was for the `all_tracks` calling, 100 max, then gets the extra 60 off the end of 
