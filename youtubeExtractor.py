@@ -3,14 +3,13 @@ import os
 import time
 from pytube import Playlist, YouTube
 from youtubesearchpython import VideosSearch
-import pafy
 
 ## TODO add support for youtube playlists
 ## TODO add search for youtube counterpart of spotify song
 ## TODO copy this code to scuffed groovy discord bot
 
 
-funeralThing = ["Hey good lookin-Hank Williams ", "Blue-Leann Rimes", "Lover come back-city and Colour", "Neon moon-Kacey musgraves with brooks and Dunn", "Pretty little angel eyes-Curtis lee", "Body in a box-City and Colour", "Good hearted woman- Waylon Jennings", "Can't help falling in love-Kacey musgraves", "I'm into something good-Herman's Hermits", "If Heaven ain't a lot like Dixie-hank Williams jr", "Secret love-Doris day", "Elvis-don't be cruel", "If I should go before you-city and Colour"]
+funeralThing = ["James Taylor: You've got a friend", "dave clark 5: because", "Donna Taggart: jealous of the angels"]
 
 begin = time.time()
 
@@ -42,12 +41,6 @@ def youtubeDLway(url):
         ydl.download([info['webpage_url']])
 
         print("\nDownload complete: {}".format(filename))
-
-def pafyWay(url):
-    ## doing it the pafy way
-    video = pafy.new(url)
-    audio = video.getbestaudio()
-    audio.download(filepath='./output')
 
 def main(query):
 
