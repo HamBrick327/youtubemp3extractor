@@ -1,3 +1,5 @@
+# A simple youtube/spotify scraping script that's not written very well
+## now that I think about it, this is just a really inefficient wrapper for yt-dl
 ## warning, this code is written by the ape equvalent of a developer
 In order to get the spotify client secret and ID, you need to make a spotify dev account at [developer.spotify.com](developer.spotify.com)
 I put mine on here so I'd prefer you don't violate ToS with my credentials, but no one is gonna look at this so I'm not too worried about it.

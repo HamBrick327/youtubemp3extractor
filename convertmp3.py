@@ -1,8 +1,10 @@
-from moviepy.editor import VideoFileClip
+''' this is a proof of concept I think, idk I wrote this code a long time ago '''
+
+# from moviepy.editor import VideoFileClip
 import eyed3
 import subprocess
 
-path = "/home/hollajam000/programming/python/youtubemp3extractor/Dance Frog/Johnny B Goode.webm"
+inputFile = "/home/hollajam000/programming/python/youtubemp3extractor/Dance Frog/Johnny B Goode.webm"
 output = "/home/hollajam000/programming/python/youtubemp3extractor/Dance Frog/Johnny B Goode.mp3"
 
 ''' no longer needed, use ffmeg instead'''
@@ -12,8 +14,10 @@ output = "/home/hollajam000/programming/python/youtubemp3extractor/Dance Frog/Jo
 # video.close()
 # audio.close()
 
-subprocess.run(['ffmpeg', '-i', path, '-vn', '-acodec', 'libmp3lame', '-y', output])
+## convert from whatever yt-dl downloaded (probably .webm) to .mp3 for optimal compatbility
+subprocess.run(['ffmpeg', '-i', inputFile, '-vn', '-acodec', 'libmp3lame', '-y', output])
 
+## add metadata
 audio = eyed3.load(output)
 audio.tag.title = "Johnny B. Goode"
 audio.tag.artist = "Chuck Berry"
