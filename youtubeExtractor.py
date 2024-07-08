@@ -2,7 +2,7 @@
 import eyed3
 import os
 import time
-from pytube import Playlist, YouTube ## <-- don't use this
+# from pytube import Playlist, YouTube ## <-- don't use this
 from youtubesearchpython import VideosSearch ## old library, probably will stop working eventually
 import subprocess
 
@@ -15,7 +15,11 @@ import subprocess
 begin = time.time()
 
 def metadata(file, track, artist): ## this needs the artist and track, so it will only be run if there is a passed artist/track name
-    pass
+    print("metadata: loading file", file)
+    audio = eyed3.load(file)
+    audio.tag.title = track
+    audio.tag.artist = artist
+    audio.tag.save()
 
 def pytubeWay(url): ## not really working, and gets mad at age redstricted stuff
     ## doing it the pytube way
@@ -29,20 +33,44 @@ def pytubeWay(url): ## not really working, and gets mad at age redstricted stuff
     os.rename(output, (name + ext))
 
 def youtubeDLway(url, track=None, artist=None): ## gets less mad at age restricted stuff
+    ## works now TODO get youtube to stop giving me the censored version of explicit songs. see if ChatGPT can help me search engineer that
     ## doing it the youtube_dl way
+    if not os.path.isdir('./output'):
+        os.mkdir("./output")
+    ogDir = os.getcwd() ## kinda hacky but better than the other thing I was thinking of
+    os.chdir("./output")
     if artist and track: ## if a track name and artist is passed, use it in the filename
-        ## TODO get filename after install
-        subprocess.run(['youtube-dl', '-o', f'./output/{track : artist}.%(ext)s', '-x', '--audio-format', 'mp3', '-f', 'bestaudio', url])
-        filename = os.listdir('./output').sort(key=os.path.getctime)
-        metadata(filename, track, artist)
+        subprocess.run(['youtube-dl', '-o', f'./{track} : {artist}.%(ext)s', '-f', 'bestaudio', url])
+        ## get newest file in the output direcotry
+        outputDir = os.listdir("./")
+        print("output dir", outputDir)
+        newFile = os.path.abspath(max(outputDir, key=os.path.getctime))
+
+        ## this is gross
+        newFileExt = newFile.split('.')[-1]
+        newFilemp3 = newFile.replace(newFileExt, 'mp3')
+        print(newFilemp3)
+
+        subprocess.run(['ffmpeg', '-i', newFile, '-vn', '-acodec', 'libmp3lame', '-y', newFilemp3])
+        os.remove(newFile)
+
+        metadata(newFilemp3, track, artist) ## under the clause there's a title and artist passed in, set the metadata, if not track and artist, no metadata
+        os.chdir(ogDir)
     else: ## use title from youtube video
-        subprocess.run(['youtube-dl', '-o', './output/%(title)s.%(ext)s', '-x', '-f', 'bestaudio', url]) ## yt-dl just kinda hangs at the end, but only on my desktop rig, not my laptop, try using a differnt nightly version or just google it
+        subprocess.run(['youtube-dl', '-o', './output/%(title)s.%(ext)s', '--audio-format', 'mp3', '-f', 'bestaudio', url]) ## yt-dl just kinda hangs at the end, but only on my desktop rig, not my laptop, try using a differnt nightly version or just google it
+        # os.system(f"youtube-dl -o ./%(title)s.%(ext)s -x --audio-format mp3 -f bestaudio {url}")
 
 
 def main(query, track=None, artist=None):
-
+    url = ''
+    print('working directory: ', os.getcwd())
     if not('://' in query): ## if not link, assume title, get link from title
-        track, artist = query.split(" : ")
+        try:
+            track, artist = query.split(" : ")
+        except:
+            print("not formatted for proper metadata, skippping")
+            track = query
+            artist = '' ## trying to avoid an error with metadata
         print("seaching video")
         search = VideosSearch(query, limit=1)
 
@@ -54,7 +82,7 @@ def main(query, track=None, artist=None):
         track = input("what is the track name? (leave blank to use default)\n")
         artist = input("who is the artist? (leave blank to use none)\n")
 
-        ## TODO fix this to not use pytube
+        ## TODO fix this
         ########### NOT WORKING ###############
         if "playlist" in query: ## if the link is a playlist
             print("playlist detected")
@@ -63,22 +91,10 @@ def main(query, track=None, artist=None):
             
             for i in range(len(playlist.video_urls)):
                 url = playlist.video_urls[i]    
-
-                youtubeDLway(url)
         else:
             url = query
 
-
-    ## add metadata
-    audio = eyed3.load()## <-- add variable when I get to that part
-    audio.tag.title = track ## track should exist at this point
-    if artist: ## artist might not exist, make sure it does
-        audio.tag.artist = artist
-    else:
-        print("no artist set, moving on")
-    
-    audio.tag.save()
-
+    youtubeDLway(url, track, artist)
     end = time.time()
 
 

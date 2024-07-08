@@ -4,8 +4,8 @@
 import eyed3
 import subprocess
 
-inputFile = "/home/hollajam000/programming/python/youtubemp3extractor/Dance Frog/Johnny B Goode.webm"
-output = "/home/hollajam000/programming/python/youtubemp3extractor/Dance Frog/Johnny B Goode.mp3"
+inputFile = "/home/hambrick/youtubemp3extractor/output/freewill : rush.ogg"
+output = "/home/hambrick/youtubemp3extractor/output/freewill : rush.mp3"
 
 ''' no longer needed, use ffmeg instead'''
 # video = VideoFileClip("/home/hollajam000/programming/python/youtubemp3extractor/Dance Frog/Johnny B Goode.mp4")
@@ -15,11 +15,13 @@ output = "/home/hollajam000/programming/python/youtubemp3extractor/Dance Frog/Jo
 # audio.close()
 
 ## convert from whatever yt-dl downloaded (probably .webm) to .mp3 for optimal compatbility
-subprocess.run(['ffmpeg', '-i', inputFile, '-vn', '-acodec', 'libmp3lame', '-y', output])
+subprocess.run(['ffmpeg', '-i', output, '-vn', '-acodec', 'libmp3lame', '-y', output])
 
 ## add metadata
 audio = eyed3.load(output)
-audio.tag.title = "Johnny B. Goode"
-audio.tag.artist = "Chuck Berry"
+print(audio)
+audio.tag.title = "Freewill"
+audio.tag.artist = "Rush"
 
 audio.tag.save()
+print("did the metadata thign")
